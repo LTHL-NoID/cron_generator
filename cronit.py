@@ -1,12 +1,13 @@
 #!/bin/python3
 
+# required dependancies 'pip3 install pytz' if on python < 3.9
+# AEST to UTC time conversion and cron schedule generator
+# intended use is to alias the location of script to cronit eg alias cronit='~/$path to script/cronit.py'
+# usage '$ cronit 3pm 15-10-23' will output UTC time for comfirmation and schedule depending on inputs
+# do not forget to chmod +x the file
+
 import re, sys, pytz
 from datetime import datetime, timedelta
-
-# AEST to UTC time conversion and cron schedule generator
-# intended use is to alias the location of script to cronit eg
-# alias cronit='~/$path to script/cronit.py'
-# do not forget to chmod +x the file
 
 def format_time(time):
     # regex
@@ -77,15 +78,7 @@ else:
 
         # weekly cron format
         elif freq == "weekly" or freq == 'w':
-            days_of_week = {
-                'sun': 0,
-                'mon': 1,
-                'tues': 2,
-                'wed': 3,
-                'thurs': 4,
-                'fri': 5,
-                'sat': 6
-            }
+            days_of_week = {'sun': 0,'mon': 1,'tues': 2,'wed': 3,'thurs': 4,'fri': 5,'sat': 6}
 
             while True:
                 day = input('What day? Sun, Mon, Tues, Wed, Thurs, Fri, Sat: ').lower()
