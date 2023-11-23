@@ -1,9 +1,9 @@
 #!/bin/python3
 
-# required dependancies 'pip3 install pytz' if on python < 3.9
-# AEST to UTC time conversion and cron schedule generator
+# required dependancies 'pip3 install pytz' if using python version < 3.9
+# converts to 24h time then, AEST to UTC time conversion, finally generates a cron schedule based on parameters
 # intended use is to alias the location of script to cronit eg alias cronit='~/$path to script/cronit.py'
-# usage '$ cronit 3pm 15-10-23' will output UTC time for comfirmation and schedule depending on inputs
+# usage '$ cronit 3pm 15-10-23' will output UTC time for confirmation and schedule depending on inputs
 # do not forget to chmod +x the file
 
 import re, sys, pytz
@@ -39,23 +39,23 @@ def format_time(time):
 
     # error handling
     if result_time is None:
-        print('¯\_(ツ)_/¯ please enter a correct time format. e.g. 2pm dd-mm-yy or 2:00pm dd-mm-yyyy')
+        print('¯\_(ツ)_/¯ please enter a correct time format. e.g. 2pm, 2:30pm or 14:30')
         return None
 
     return result_time
 
 # check arguments are passed
-if len(sys.argv) < 3:
-    print("Enter AEST time & date to convert to UTC for a cron schedule.\nAccepted Formats: 12pm dd-mm-yyyy, 12:00 dd-mm-yy")
+if len(sys.argv) < 2:
+    print("Enter AEST time to convert to UTC for a cron schedule.\nAccepted Formats: cronit 2pm, cronit 2:30pm or cronit 14:30")
 else:
     time = sys.argv[1]
-    date = sys.argv[2]
+    #date = sys.argv[2]
     converted_time = format_time(time)
 
     # convert AEST to UTC and print for visual aid
     if converted_time:
-        aest_time = converted_time.strftime('%H:%M %d-%m-%Y')
-        utc_time = converted_time.astimezone(pytz.UTC).strftime('%H:%M %d-%m-%Y')
+        aest_time = converted_time.strftime('%H:%M %p - %d-%m-%Y')
+        utc_time = converted_time.astimezone(pytz.UTC).strftime('%H:%M %p - %d-%m-%Y')
         print(f"\nAEST Time: {aest_time}\nUTC Time: {utc_time}\n")
         hour = converted_time.astimezone(pytz.UTC).strftime('%H')
         minute = converted_time.astimezone(pytz.UTC).strftime('%M')
@@ -97,15 +97,26 @@ else:
 
         # monthly cron format
         elif freq == "monthly" or freq == 'm':
+            print('Remember some months have < 31 days.')
             while True:
-                date = input('What day? Enter date between 1 and 31: ')
+                date = input('What date? Enter date between 1 and 31: ')
                 if date.isdigit():
                     date = int(date)
                     if 1 <= date <= 31:
                         break
                 print('¯\_(ツ)_/¯ ruhroh please enter date between 1 and 31.')
 
-            print(f'''
+            if date <= 9:
+                print(f'''
+ ┌───────────── minute (0 - 59)
+ │  ┌───────────── hour (0 - 23)
+ │  │  ┌───────────── day of the month (1 - 31 or * for every day)
+ │  │  │ ┌───────────── month (1 - 12 or * for every month)
+ │  │  │ │ ┌───────────── day of the week 0 - 6, Sunday to Saturday or * for every day
+ {minute} {hour} {date} * *\n''')
+
+            else:
+                print(f'''
  ┌───────────── minute (0 - 59)
  │  ┌───────────── hour (0 - 23)
  │  │  ┌───────────── day of the month (1 - 31 or * for every day)
